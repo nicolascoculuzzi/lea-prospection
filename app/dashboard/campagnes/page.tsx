@@ -1,26 +1,25 @@
 import { createClient } from "@/lib/supabase/server";
 import { PageHead, Table, Empty, Pill } from "@/components/ui";
+import { NewCampaign } from "@/components/new-campaign";
 import { t } from "@/lib/fr";
 
 export const dynamic = "force-dynamic";
 
 const TONE: Record<string, "vert" | "ambre" | "rouge" | "neutre"> = {
   active: "vert",
-  running: "vert",
-  completed: "vert",
   paused: "ambre",
-  scheduled: "ambre",
   draft: "neutre",
-  failed: "rouge",
+  archived: "neutre",
 };
 
 export default async function Campagnes() {
   const supabase = await createClient();
 
-  const [{ data: campaigns }, { data: runs }] = await Promise.all([
+  const [{ data: merchant }, { data: campaigns }, { data: runs }] = await Promise.all([
+    supabase.from("merchants").select("merchant_id").limit(1).maybeSingle(),
     supabase
       .from("campaigns")
-      .select("id, campaign_type, status, created_at")
+      .select("id, name, campaign_type, status, created_at")
       .order("created_at", { ascending: false }),
     supabase
       .from("campaign_dispatch_runs")
@@ -29,7 +28,7 @@ export default async function Campagnes() {
       .limit(200),
   ]);
 
-  // Latest run per campaign — the progress signal the engine actually writes.
+  // Latest run per campaign — what the engine last decided.
   const latest = new Map<string, NonNullable<typeof runs>[number]>();
   for (const r of runs ?? []) {
     if (r.campaign_id && !latest.has(r.campaign_id)) latest.set(r.campaign_id, r);
@@ -39,7 +38,11 @@ export default async function Campagnes() {
 
   return (
     <>
-      <PageHead title={t.campagnes.title} sub={t.campagnes.sub} />
+      <PageHead
+        title={t.campagnes.title}
+        sub={t.campagnes.sub}
+        right={merchant ? <NewCampaign merchantId={merchant.merchant_id} /> : undefined}
+      />
 
       {!campaigns?.length ? (
         <Empty title={t.campagnes.empty_title} text={t.campagnes.empty_text} />
@@ -60,19 +63,28 @@ export default async function Campagnes() {
             const pct = total ? Math.round((sendable / total) * 100) : 0;
             return (
               <tr key={c.id} className="border-b border-ligne last:border-0">
-                <td className="px-5 py-3.5 font-medium">{c.campaign_type ?? t.common.none}</td>
+                <td className="px-5 py-3.5">
+                  <span className="font-medium">{c.name ?? c.campaign_type ?? t.common.none}</span>
+                  {c.name && c.campaign_type && (
+                    <span className="ml-2 text-[0.75rem] text-gris-2">{c.campaign_type}</span>
+                  )}
+                </td>
                 <td className="px-5 py-3.5">
                   <Pill tone={TONE[c.status ?? ""] ?? "neutre"}>{c.status ?? t.common.none}</Pill>
                 </td>
                 <td className="px-5 py-3.5">
-                  <div className="flex items-center gap-2.5">
-                    <div className="h-1.5 w-24 overflow-hidden rounded-full bg-nuit">
-                      <div className="h-full rounded-full bg-vert" style={{ width: `${pct}%` }} />
+                  {run ? (
+                    <div className="flex items-center gap-2.5">
+                      <div className="h-1.5 w-24 overflow-hidden rounded-full bg-nuit">
+                        <div className="h-full rounded-full bg-vert" style={{ width: `${pct}%` }} />
+                      </div>
+                      <span className="text-[0.75rem] text-gris [font-variant-numeric:tabular-nums]">
+                        {sendable}/{total}
+                      </span>
                     </div>
-                    <span className="text-[0.75rem] text-gris [font-variant-numeric:tabular-nums]">
-                      {sendable}/{total}
-                    </span>
-                  </div>
+                  ) : (
+                    <span className="text-[0.8125rem] text-gris-2">{t.campagnes.not_run}</span>
+                  )}
                 </td>
                 <td className="px-5 py-3.5 [font-variant-numeric:tabular-nums]">
                   {run?.leads_blocked ?? 0}

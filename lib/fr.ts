@@ -46,10 +46,19 @@ export const t = {
     col_status: "Statut",
     col_sendable: "Joignables",
     col_blocked: "Bloqués",
+    not_run: "Pas encore évaluée",
     col_created: "Créée le",
     empty_title: "Aucune campagne pour l'instant.",
-    empty_text: "Votre première campagne apparaîtra ici.",
+    empty_text: "Créez une campagne, importez vos contacts, puis lancez-la.",
     new: "Nouvelle campagne",
+    f_name: "Nom de la campagne",
+    f_name_ph: "Ex. : Plombiers Montréal — janvier",
+    f_cap: "Appels max par jour",
+    f_start: "Début",
+    f_end: "Fin",
+    f_create: "Créer",
+    f_note:
+      "La campagne démarre en brouillon : aucun appel n'est composé tant que vous ne l'activez pas. Les heures sont respectées selon le fuseau du destinataire, et les listes d'exclusion s'appliquent automatiquement.",
   },
 
   contacts: {
@@ -102,5 +111,8 @@ export const t = {
   common: {
     loading: "Chargement",
     none: "—",
+    saving: "Enregistrement",
+    cancel: "Annuler",
+    error: "Une erreur est survenue. Réessayez.",
   },
 };
