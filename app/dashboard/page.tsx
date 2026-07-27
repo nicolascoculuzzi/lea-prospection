@@ -8,23 +8,27 @@ export default async function Home() {
   const supabase = await createClient();
   const since = new Date(Date.now() - 30 * 864e5).toISOString();
 
-  // Outbound-only surface: this portal never shows inbound reception data.
-  const { data: calls } = await supabase
-    .from("call_sessions")
-    .select("id, answered_at, transfer_attempted, transfer_outcome")
-    .eq("direction", "outbound")
-    .gte("started_at", since)
-    .limit(5000);
+  // Outbound-only surface: this portal never reads inbound reception data.
+  const [{ data: attempts }, { data: calls }, { count: campaignCount }] = await Promise.all([
+    supabase
+      .from("outbound_attempts")
+      .select("id, outcome")
+      .gte("attempted_at", since)
+      .limit(5000),
+    supabase
+      .from("call_sessions")
+      .select("id, answered_at, transfer_outcome")
+      .eq("direction", "outbound")
+      .gte("started_at", since)
+      .limit(5000),
+    supabase.from("campaigns").select("*", { count: "exact", head: true }),
+  ]);
 
+  const dials = attempts?.length ?? 0;
   const rows = calls ?? [];
-  const dials = rows.length;
   const reached = rows.filter((c) => c.answered_at).length;
   const transfers = rows.filter((c) => c.transfer_outcome === "connected").length;
   const rate = reached ? Math.round((transfers / reached) * 100) : 0;
-
-  const { count: campaignCount } = await supabase
-    .from("outbound_campaigns")
-    .select("*", { count: "exact", head: true });
 
   return (
     <>
