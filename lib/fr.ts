@@ -108,6 +108,49 @@ export const t = {
     note: "Pour modifier ces réglages, écrivez-nous.",
   },
 
+
+  detail: {
+    back: "Retour aux campagnes",
+    step1: "Étape 1",
+    step2: "Étape 2",
+    step3: "Étape 3",
+    import_title: "Importer votre liste",
+    import_sub:
+      "Un fichier CSV avec une colonne entreprise et une colonne téléphone. Les numéros sont normalisés, les doublons fusionnés, et toute personne sur votre liste d'exclusion est bloquée dès l'importation.",
+    csv_ph: "entreprise,telephone\nPlomberie Gagnon,514-555-0142",
+    import_btn: "Importer",
+    import_done: "{n} contacts importés · {dupe} doublons · {bad} numéros invalides",
+    preview_title: "Vérifier avant d'appeler",
+    preview_sub:
+      "Chaque contact passe par le filtre de conformité sans qu'un seul appel soit composé. Vous voyez qui est joignable, qui est bloqué, et pourquoi.",
+    preview_btn: "Lancer la vérification",
+    p_total: "Contacts",
+    p_sendable: "Joignables",
+    p_blocked: "Bloqués",
+    why_blocked: "Raisons de blocage",
+    launch_title: "Activer la campagne",
+    launch_sub:
+      "Une fois active, Léa compose selon votre cadence et votre fenêtre d'appel, et transfère les prospects intéressés à un représentant.",
+    activate: "Activer",
+    pause: "Mettre en pause",
+    is_active: "La campagne compose selon la cadence configurée.",
+    is_idle: "Aucun appel n'est composé pour l'instant.",
+    recent_leads: "Contacts récents",
+  },
+
+  reasons: {
+    no_consent: "Consentement absent",
+    dnc_suppressed: "Sur la liste d'exclusion",
+    quiet_hours: "Hors des heures permises",
+    attempt_cap: "Trop de tentatives",
+    unknown_jurisdiction: "Territoire inconnu",
+    no_jurisdiction_profile: "Aucune règle pour ce territoire",
+    "awaiting_registration:crtc_ran": "Inscription CRTC requise",
+    "awaiting_registration:crtc_dncl_subscription": "Abonnement à la LNNTE requis",
+    "awaiting_registration:national_dnc": "Inscription au registre national requise",
+    "awaiting_registration:a2p_10dlc_sms": "Enregistrement 10DLC requis",
+  } as Record<string, string>,
+
   common: {
     loading: "Chargement",
     none: "—",

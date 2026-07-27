@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { PageHead, Table, Empty, Pill } from "@/components/ui";
 import { NewCampaign } from "@/components/new-campaign";
@@ -64,7 +65,12 @@ export default async function Campagnes() {
             return (
               <tr key={c.id} className="border-b border-ligne last:border-0">
                 <td className="px-5 py-3.5">
-                  <span className="font-medium">{c.name ?? c.campaign_type ?? t.common.none}</span>
+                  <Link
+                    href={`/dashboard/campagnes/${c.id}`}
+                    className="font-medium text-blanc transition-colors hover:text-vert"
+                  >
+                    {c.name ?? c.campaign_type ?? t.common.none}
+                  </Link>
                   {c.name && c.campaign_type && (
                     <span className="ml-2 text-[0.75rem] text-gris-2">{c.campaign_type}</span>
                   )}
